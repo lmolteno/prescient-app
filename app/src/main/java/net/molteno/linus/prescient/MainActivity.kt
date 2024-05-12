@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.molteno.linus.prescient.sun.api.HpEntry
@@ -26,10 +27,10 @@ import net.molteno.linus.prescient.sun.api.fetchHp30
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import timber.log.Timber
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree());
         enableEdgeToEdge()
         setContent {
             PrescientTheme {
@@ -53,7 +54,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         LaunchedEffect(fetch) {
             launch(Dispatchers.IO) {
                 val hp30 = fetchHp30()
-                currentHp = hp30?.maxBy { it.time }
+                currentHp = hp30.maxBy { it.time }
             }
         }
         Text(
