@@ -53,8 +53,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     Column {
         LaunchedEffect(fetch) {
             launch(Dispatchers.IO) {
-                val hp30 = fetchHp30()
-                currentHp = hp30.maxBy { it.time }
+//                val hp30 = fetchHp30()
+//                currentHp = hp30.maxBy { it.time }
             }
         }
         Text(
