@@ -1,5 +1,6 @@
 package net.molteno.linus.prescient.sun.api
 
+import net.molteno.linus.prescient.sun.api.models.SolarRegion
 import timber.log.Timber
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -7,7 +8,10 @@ import javax.inject.Singleton
 import kotlin.math.floor
 
 @Singleton
-class SunApi @Inject constructor (private val potsdam: PotsdamApi) {
+class SunApi @Inject constructor (
+    private val potsdam: PotsdamApi,
+    private val swpcApi: SwpcApi
+) {
     suspend fun fetchHp30(): List<HpEntry> {
         val hp30s: MutableList<HpEntry> = mutableListOf()
         potsdam.fetchHp30File().byteStream().reader().useLines { lines ->
@@ -38,5 +42,14 @@ class SunApi @Inject constructor (private val potsdam: PotsdamApi) {
             }
         }
         return hp30s
+    }
+
+    suspend fun fetchSolarRegions(): List<SolarRegion> {
+        try {
+            return swpcApi.fetchSolarRegions()
+        } catch (e: Exception) {
+            Timber.e(e)
+            throw e
+        }
     }
 }

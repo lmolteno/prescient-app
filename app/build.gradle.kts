@@ -68,8 +68,11 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.commons.net.commons.net)
     implementation(libs.timber)
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    kapt(libs.hilt.android.compiler)
+    kapt(libs.hilt.compiler)
+
 }
 
 kapt {
