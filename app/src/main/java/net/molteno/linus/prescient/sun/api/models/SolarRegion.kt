@@ -12,7 +12,7 @@ data class SolarRegion (
     val extent: Int,
     val numberSpots: Int,
     val magClass: String,
-    val magString: String,
+    val magString: String?,
     val status: String,
     val cXrayEvents: Int,
     val mXrayEvents: Int,
