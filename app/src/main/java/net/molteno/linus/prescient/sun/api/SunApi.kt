@@ -1,6 +1,7 @@
 package net.molteno.linus.prescient.sun.api
 
-import net.molteno.linus.prescient.sun.api.models.SolarRegion
+import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
+import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import timber.log.Timber
 import java.time.ZonedDateTime
 import javax.inject.Inject
@@ -44,9 +45,11 @@ class SunApi @Inject constructor (
         return hp30s
     }
 
-    suspend fun fetchSolarRegions(): List<SolarRegion> {
+    suspend fun fetchSolarRegions(): Map<Int, List<SolarRegionObservation>> {
         try {
             return swpcApi.fetchSolarRegions()
+                .map { it.toSolarRegionObservation() }
+                .groupBy { it.region }
         } catch (e: Exception) {
             Timber.e(e)
             throw e

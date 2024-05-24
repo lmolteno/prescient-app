@@ -1,11 +1,11 @@
 package net.molteno.linus.prescient
 
-import android.app.Application
+import androidx.multidex.MultiDexApplication
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 
 @HiltAndroidApp
-class PrescientApplication: Application() {
+class PrescientApplication: MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 

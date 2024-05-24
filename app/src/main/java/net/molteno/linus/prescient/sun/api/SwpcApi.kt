@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.molteno.linus.prescient.sun.api.models.SolarRegion
+import net.molteno.linus.prescient.sun.api.models.SolarRegionObservationDto
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -16,7 +16,7 @@ private const val BASE_URL = "https://services.swpc.noaa.gov/"
 
 interface SwpcApi {
     @GET("/json/solar_regions.json")
-    suspend fun fetchSolarRegions(): List<SolarRegion>
+    suspend fun fetchSolarRegions(): List<SolarRegionObservationDto>
 }
 
 @Module

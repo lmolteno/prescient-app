@@ -27,18 +27,20 @@ import net.molteno.linus.prescient.ui.theme.PurpleGrey80
 import kotlin.math.cos
 import kotlin.math.sin
 
+
 @Composable
 fun Moon(phase: Float, modifier: Modifier = Modifier ) {
     val stroke = Stroke(2f, cap = StrokeCap.Round)
     val leftSide = phase < 0.5
     val halfPhase = if (leftSide) phase * 2f else 2 - (phase * 2f)
+    val shadowColor = Color.Black.copy(alpha = 1f - halfPhase / 2)
 
     Canvas(modifier
         .fillMaxSize()
         .padding(10.dp)
     ) {
         if (phase == 0.5f) {
-            drawCircle(Color.Black)
+            drawCircle(shadowColor)
             return@Canvas
         }
         if (phase == 0.0f || phase == 1.0f) {
@@ -65,7 +67,7 @@ fun Moon(phase: Float, modifier: Modifier = Modifier ) {
             moonPath.close()
 
             drawPath(moonPath, Color.Black, style = stroke)
-            drawPath(moonPath, Color.Black)
+            drawPath(moonPath, shadowColor)
 
             drawArc(
                 if (leftSide) Color.White else Color.Black,
@@ -93,7 +95,7 @@ fun Moon(phase: Float, modifier: Modifier = Modifier ) {
 @Preview(showBackground = true)
 @Composable
 fun MoonPreview() {
-    var sliderPosition by remember { mutableFloatStateOf(0.3f) }
+    var sliderPosition by remember { mutableFloatStateOf(1f) }
     PrescientTheme {
         Column(Modifier.background(PurpleGrey80)) {
             Slider(
