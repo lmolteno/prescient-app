@@ -72,6 +72,8 @@ dependencies {
     implementation(libs.commons.net.commons.net)
     implementation(libs.timber)
 
+    implementation(libs.vico.compose.m3)
+
     implementation(libs.androidx.multidex)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)

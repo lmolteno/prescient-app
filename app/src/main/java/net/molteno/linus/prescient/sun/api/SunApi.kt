@@ -47,8 +47,11 @@ class SunApi @Inject constructor (
 
     suspend fun fetchSolarRegions(): Map<Int, List<SolarRegionObservation>> {
         try {
-            return swpcApi.fetchSolarRegions()
-                .map { it.toSolarRegionObservation() }
+            val regions = swpcApi.fetchSolarRegions().map { it.toSolarRegionObservation() }
+            val mostRecentObservations = regions.maxOf { it.observedDate}
+
+            return regions
+                .filter { it.observedDate == mostRecentObservations }
                 .groupBy { it.region }
         } catch (e: Exception) {
             Timber.e(e)

@@ -1,10 +1,9 @@
 package net.molteno.linus.prescient
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +33,7 @@ import kotlinx.coroutines.launch
 import net.molteno.linus.prescient.earth.Earth
 import net.molteno.linus.prescient.moon.Moon
 import net.molteno.linus.prescient.sun.Sun
+import net.molteno.linus.prescient.sun.SunPage
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.sun.api.NoaaApiModule
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
@@ -47,15 +47,14 @@ fun MainPage() {
     val currentHp by viewModel.hp30.collectAsState()
     val solarRegions by viewModel.solarRegions.collectAsState()
 
-    MainPageView(solarRegions = solarRegions, currentHp = currentHp, phase = 0.25f)
+    Surface {
+        MainPageView(solarRegions = solarRegions, currentHp = currentHp, phase = 0.25f)
+    }
 }
 
 enum class SystemObject {
     EARTH, MOON, SUN
 }
-
-val enterTransition = scaleIn() + fadeIn()
-val exitTransition = scaleOut() + fadeOut()
 
 @Composable
 fun MainPageView(
@@ -63,8 +62,8 @@ fun MainPageView(
     currentHp: List<HpEntry>?,
     phase: Float
 ) {
-    var selectedItem by remember { mutableStateOf(SystemObject.EARTH) }
-    var topLeftItem by remember { mutableStateOf(SystemObject.SUN) }
+    var selectedItem by remember { mutableStateOf(SystemObject.SUN) }
+    var topLeftItem by remember { mutableStateOf(SystemObject.EARTH) }
     var topRightItem by remember { mutableStateOf(SystemObject.MOON) }
 
     @Composable
@@ -72,14 +71,28 @@ fun MainPageView(
         AnimatedContent(
             targetState = item,
             label = "Fade between objects",
-        ) {
-            when (it) {
+        ) { obj ->
+            when (obj) {
                 SystemObject.SUN -> Sun(regions = solarRegions?.mapNotNull { entry ->
                     entry.value.firstOrNull { it.observedDate == LocalDate.now().minusDays(1) }
                 } ?: emptyList())
-
                 SystemObject.EARTH -> Earth(phase = phase)
                 SystemObject.MOON -> Moon(phase = phase)
+            }
+        }
+    }
+
+    @Composable
+    fun getMainContent(item: SystemObject) {
+        AnimatedContent(
+            targetState = item,
+            label = "Fade between objects",
+            transitionSpec = { slideInVertically { it } togetherWith slideOutVertically { it } }
+        ) { obj ->
+            when (obj) {
+                SystemObject.SUN -> SunPage(regions = solarRegions ?: emptyMap(), currentHp = currentHp)
+                SystemObject.MOON -> Moon(phase = phase)
+                SystemObject.EARTH -> Earth(phase = phase)
             }
         }
     }
@@ -120,7 +133,7 @@ fun MainPageView(
             }
         }
         HorizontalDivider()
-        getItem(item = selectedItem)
+        getMainContent(item = selectedItem)
     }
 }
 
@@ -140,8 +153,11 @@ fun MainPagePreview() {
 
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
-            regions = noaaApi.fetchSolarRegions()
-                .map { it.toSolarRegionObservation() }.filter { it.numberSpots > 0 }
+            val rawRegions = noaaApi.fetchSolarRegions()
+                .map { it.toSolarRegionObservation() }
+
+            regions = rawRegions
+                .filter { it.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }
                 .groupBy { it.region }
         }
     }

@@ -37,18 +37,19 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
-private val displayFamily = FontFamily(
+val displayFamily = FontFamily(
     Font(R.font.dm_serif_display, FontWeight.Normal),
     Font(R.font.dm_serif_display_italic, FontWeight.Normal, FontStyle.Italic),
 )
 
-private val monoFamily = FontFamily(
+val monoFamily = FontFamily(
+    Font(R.font.dm_mono_light, FontWeight.Light),
     Font(R.font.dm_mono_regular, FontWeight.Normal),
     Font(R.font.dm_mono_italic, FontWeight.Normal, FontStyle.Italic),
-    Font(R.font.dm_mono_light, FontWeight.Light),
+    Font(R.font.dm_mono_medium, FontWeight.Medium),
 )
 
-private val sansFamily = FontFamily(
+val sansFamily = FontFamily(
     Font(R.font.dm_sans_light, FontWeight.Light),
     Font(R.font.dm_sans_lightitalic, FontWeight.Light, FontStyle.Italic),
     Font(R.font.dm_sans_regular, FontWeight.Normal),
@@ -96,9 +97,20 @@ private val typography = Typography(
         fontSize = 36.sp,
         lineHeight = 44.sp
     ),
+    titleLarge = TextStyle(
+        fontFamily = sansFamily,
+        fontSize = 24.sp,
+        lineHeight = 24.sp,
+        letterSpacing = (0.15).sp
+    ),
     titleMedium = TextStyle(
         fontFamily = sansFamily,
-        fontWeight = FontWeight(500),
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = (0.15).sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = sansFamily,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = (0.15).sp
