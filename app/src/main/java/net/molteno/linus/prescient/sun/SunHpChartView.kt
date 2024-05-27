@@ -1,16 +1,27 @@
 package net.molteno.linus.prescient.sun
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -48,7 +59,36 @@ val midDayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
 
 @Composable
-fun SunHpChart(hp: List<HpEntry>?) {
+fun SunHpChartCard(hp: List<HpEntry>?) {
+    Card {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Hp30 & Ap30",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                "from the university of potsdam",
+                color = MaterialTheme.colorScheme.outline,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.End
+            )
+        }
+        HorizontalDivider(Modifier.padding(horizontal = 8.dp))
+        Box(Modifier.padding(8.dp)) {
+            SunHpChartView(hp)
+        }
+        Spacer(Modifier.weight(1f, true))
+    }
+}
+
+@Composable
+fun SunHpChartView(hp: List<HpEntry>?) {
     val modelProducer = remember {
         CartesianChartModelProducer.build {
             if (hp == null) return@build
@@ -111,8 +151,8 @@ fun SunHpChart(hp: List<HpEntry>?) {
 @Preview
 fun SunHpChartPreview() {
     PrescientTheme {
-        Surface(Modifier.width(300.dp)) {
-            SunHpChart(hp = listOf(
+        Surface(Modifier.width(400.dp).height(300.dp)) {
+            SunHpChartCard(hp = listOf(
                 HpEntry(time = ZonedDateTime.now().minusMinutes(180), ap30 = 0.5, hp30 = 2.0 ),
                 HpEntry(time = ZonedDateTime.now().minusMinutes(150), ap30 = 0.5, hp30 = 3.0 ),
                 HpEntry(time = ZonedDateTime.now().minusMinutes(120), ap30 = 0.5, hp30 = 2.0 ),

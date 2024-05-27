@@ -24,6 +24,7 @@ data class SolarRegionObservationDto (
     val cFlareProbability: Int,
     val mFlareProbability: Int,
     val xFlareProbability: Int,
+    val protonProbability: Int?,
     val firstDate: String // iso 8601
 )
 
@@ -48,6 +49,7 @@ data class SolarRegionObservation (
     val cFlareProbability: Int,
     val mFlareProbability: Int,
     val xFlareProbability: Int,
+    val protonProbability: Int?,
     val firstDate: LocalDateTime // iso 8601
 )
 
@@ -73,6 +75,7 @@ fun SolarRegionObservationDto.toSolarRegionObservation() =
         cFlareProbability = cFlareProbability,
         mFlareProbability = mFlareProbability,
         xFlareProbability = xFlareProbability,
+        protonProbability = protonProbability,
         firstDate = LocalDateTime.parse(firstDate)
     )
 

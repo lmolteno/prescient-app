@@ -1,12 +1,11 @@
 package net.molteno.linus.prescient.sun
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -14,7 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
@@ -38,72 +40,137 @@ import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SunRegionList(
     regions: Map<Int, List<SolarRegionObservation>>,
-    onRegionSelection: (region: Int) -> Unit = { },
+    selectedRegion: Int? = null,
+    onRegionSelection: (region: Int?) -> Unit = { },
     state: LazyListState = rememberLazyListState()
 ) {
     LazyColumn (
         Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+        state = state
     ) {
-        stickyHeader {
-            Surface(shadowElevation = 5.dp) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 3.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("region")
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                        Column(Modifier.weight(1f), horizontalAlignment = Alignment.End) {
-                            Text("spots")
-                        }
-                    }
-                }
-                HorizontalDivider()
-            }
-        }
-        items(regions.entries.toList()) {region ->
+        items(regions.entries.sortedByDescending { it.key }.toList()) {region ->
             val regionId = region.key
             val observations = region.value
             val latestObservation = observations.maxBy { it.observedDate }
+            val selected = selectedRegion == regionId
 
-            Surface(
+            ElevatedCard(
+                onClick = { onRegionSelection(if (selected) null else regionId) },
                 Modifier
-                    .padding(horizontal = 5.dp)
-                    .clickable { onRegionSelection(regionId) },
-                shape = RoundedCornerShape(5.dp),
-                tonalElevation = 1.dp,
-                shadowElevation = 2.dp,
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 16.dp),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = if (selected) 5.dp else 1.dp)
             ) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 5.dp, vertical = 3.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.padding(16.dp)) {
+                    Row {
                         Column(horizontalAlignment = Alignment.Start) {
-                            Text("AR$regionId", style = MaterialTheme.typography.labelLarge)
-                            Text(
-                                latestObservation.location,
-                                style = MaterialTheme.typography.labelSmall
+                            Text("region", style = MaterialTheme.typography.labelSmall)
+                            Text("AR$regionId",
+                                style = MaterialTheme.typography.labelLarge
+                                    .copy(fontWeight = FontWeight.Bold)
                             )
                         }
+                        Spacer(Modifier.weight(1f))
+                        ScoreCard(
+                            "area",
+                            "${latestObservation.area}",
+                            Alignment.End,
+                            Modifier.width(50.dp)
+                        )
+                        ScoreCard(
+                            "spots",
+                            "${latestObservation.numberSpots}",
+                            Alignment.End,
+                            Modifier.width(50.dp)
+                        )
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                        Column(
-                            Modifier
-                                .weight(1f)
-                                .padding(horizontal = 5.dp), horizontalAlignment = Alignment.End) {
-                            Text("${latestObservation.numberSpots}")
+                    Spacer(Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("classification", style = MaterialTheme.typography.labelMedium)
+                        Spacer(Modifier.width(8.dp))
+                        HorizontalDivider()
+                    }
+                    Row {
+                        ScoreCard(
+                            "magnetic",
+                            "${latestObservation.magClass?.toGreek()}",
+                            Alignment.Start,
+                            Modifier.width(100.dp)
+                        )
+                        ScoreCard(
+                            "spot",
+                            "${latestObservation.spotClass}",
+                            Alignment.Start,
+                            Modifier.width(100.dp)
+                        )
+                    }
+                    AnimatedVisibility(visible = selected) {
+                        Column(Modifier.padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("events", style = MaterialTheme.typography.labelMedium)
+                                Spacer(Modifier.width(8.dp))
+                                HorizontalDivider()
+                            }
+                            Row {
+                                ScoreCard(
+                                    "X x-ray",
+                                    "${latestObservation.xXrayEvents}",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                                ScoreCard(
+                                    "M x-ray",
+                                    "${latestObservation.mXrayEvents}",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                                ScoreCard(
+                                    "C x-ray",
+                                    "${latestObservation.cXrayEvents}",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                                ScoreCard(
+                                    "proton",
+                                    "${latestObservation.protonEvents}",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("probabilities", style = MaterialTheme.typography.labelMedium)
+                                Spacer(Modifier.width(8.dp))
+                                HorizontalDivider()
+                            }
+                            Row {
+                                ScoreCard(
+                                    "X x-ray",
+                                    "${latestObservation.xFlareProbability}%",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                                ScoreCard(
+                                    "M x-ray",
+                                    "${latestObservation.mFlareProbability}%",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                                ScoreCard(
+                                    "C x-ray",
+                                    "${latestObservation.cFlareProbability}%",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                                ScoreCard(
+                                    "proton",
+                                    "${latestObservation.protonProbability}%",
+                                    Alignment.Start,
+                                    Modifier.width(50.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -111,6 +178,31 @@ fun SunRegionList(
         }
     }
 }
+
+@Composable
+fun ScoreCard(label: String, value: String, alignment: Alignment.Horizontal, modifier: Modifier = Modifier) {
+    Column(modifier, horizontalAlignment = alignment) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = if (alignment == Alignment.End) TextAlign.End else TextAlign.Start
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+fun String.toGreek() =
+    this.map { when (it) {
+        'A' -> "α"
+        'B' -> "β"
+        'D' -> "δ"
+        'G' -> "γ"
+        else -> it
+    } }.joinToString("")
+
 
 @Preview
 @Composable
@@ -137,6 +229,7 @@ fun SunRegionListPreview() {
                 xFlareProbability = 1,
                 cFlareProbability = 0,
                 mFlareProbability = 0,
+                protonProbability = 0,
                 longitude = 17,
                 latitude = -8,
                 area = 100
@@ -160,7 +253,7 @@ fun SunRegionListPreview() {
             Modifier
                 .width(300.dp)
                 .height(500.dp)) {
-            SunRegionList(regions = regions)
+            SunRegionList(regions = regions, selectedRegion = 3857)
         }
     }
 }
