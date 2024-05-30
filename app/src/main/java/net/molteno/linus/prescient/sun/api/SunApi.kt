@@ -1,6 +1,8 @@
 package net.molteno.linus.prescient.sun.api
 
+import net.molteno.linus.prescient.sun.api.models.SolarEvent
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
+import net.molteno.linus.prescient.sun.api.models.toSolarEvent
 import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import timber.log.Timber
 import java.time.ZonedDateTime
@@ -47,12 +49,22 @@ class SunApi @Inject constructor (
 
     suspend fun fetchSolarRegions(): Map<Int, List<SolarRegionObservation>> {
         try {
-            val regions = swpcApi.fetchSolarRegions().map { it.toSolarRegionObservation() }
+            val regions = swpcApi.fetchSolarRegions().mapNotNull { it.toSolarRegionObservation() }
             val mostRecentObservations = regions.maxOf { it.observedDate}
 
             return regions
                 .filter { it.observedDate == mostRecentObservations }
                 .groupBy { it.region }
+        } catch (e: Exception) {
+            Timber.e(e)
+            throw e
+        }
+    }
+
+    suspend fun fetchSolarEvents(): List<SolarEvent> {
+        try {
+            val events = swpcApi.fetchEvents().mapNotNull { it.toSolarEvent() }
+            return events
         } catch (e: Exception) {
             Timber.e(e)
             throw e

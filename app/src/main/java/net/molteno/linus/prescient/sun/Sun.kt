@@ -120,7 +120,7 @@ fun SunPreview() {
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
             regions = noaaApi.fetchSolarRegions()
-                .map { it.toSolarRegionObservation() }
+                .mapNotNull { it.toSolarRegionObservation() }
                 .filter { it.observedDate == LocalDate.now().minusDays(1) }
         }
     }

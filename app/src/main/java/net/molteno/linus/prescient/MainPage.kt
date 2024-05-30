@@ -39,16 +39,21 @@ import net.molteno.linus.prescient.sun.api.NoaaApiModule
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
+import timber.log.Timber
 import java.time.LocalDate
 
 @Composable
 fun MainPage() {
     val viewModel: TestViewModel = hiltViewModel()
     val currentHp by viewModel.hp30.collectAsState()
+    val events by viewModel.solarEvents.collectAsState()
     val solarRegions by viewModel.solarRegions.collectAsState()
 
     Surface {
         MainPageView(solarRegions = solarRegions, currentHp = currentHp, phase = 0.25f)
+    }
+    LaunchedEffect(key1 = events) {
+        Timber.d("events: $events")
     }
 }
 
@@ -154,7 +159,7 @@ fun MainPagePreview() {
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
             val rawRegions = noaaApi.fetchSolarRegions()
-                .map { it.toSolarRegionObservation() }
+                .mapNotNull { it.toSolarRegionObservation() }
 
             regions = rawRegions
                 .filter { it.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }

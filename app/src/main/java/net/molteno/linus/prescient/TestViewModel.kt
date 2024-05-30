@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.sun.api.SunApi
+import net.molteno.linus.prescient.sun.api.models.SolarEvent
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TestViewModel @Inject constructor(private val sunApi: SunApi): ViewModel() {
+    val solarEvents = MutableStateFlow<List<SolarEvent>?>(null)
     val hp30 = MutableStateFlow<List<HpEntry>?>(null)
     val solarRegions = MutableStateFlow<Map<Int, List<SolarRegionObservation>>?>(null)
 
@@ -23,6 +25,9 @@ class TestViewModel @Inject constructor(private val sunApi: SunApi): ViewModel()
         }
         viewModelScope.launch(Dispatchers.IO) {
             solarRegions.value = sunApi.fetchSolarRegions()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            solarEvents.value = sunApi.fetchSolarEvents()
         }
     }
 }

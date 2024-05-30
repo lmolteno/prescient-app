@@ -5,9 +5,9 @@ import java.time.LocalDateTime
 
 data class SolarRegionObservationDto (
     val region: Int,
-    val latitude: Int,
-    val longitude: Int,
-    val location: String,
+    val latitude: Int?,
+    val longitude: Int?,
+    val location: String?,
     val observedDate: String, // iso 8601
     val carringtonLongitude: Int,
     val area: Int,
@@ -53,8 +53,10 @@ data class SolarRegionObservation (
     val firstDate: LocalDateTime // iso 8601
 )
 
-fun SolarRegionObservationDto.toSolarRegionObservation() =
-    SolarRegionObservation(
+fun SolarRegionObservationDto.toSolarRegionObservation(): SolarRegionObservation? {
+    if (latitude == null || longitude == null || location == null) return null
+
+    return SolarRegionObservation(
         region = region,
         latitude = latitude,
         longitude = longitude,
@@ -78,6 +80,7 @@ fun SolarRegionObservationDto.toSolarRegionObservation() =
         protonProbability = protonProbability,
         firstDate = LocalDateTime.parse(firstDate)
     )
+}
 
 /*
 {

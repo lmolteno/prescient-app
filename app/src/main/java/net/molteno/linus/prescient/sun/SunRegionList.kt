@@ -240,7 +240,7 @@ fun SunRegionListPreview() {
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
             val rawRegions = noaaApi.fetchSolarRegions()
-                .map { it.toSolarRegionObservation() }
+                .mapNotNull { it.toSolarRegionObservation() }
 
             regions = rawRegions
                 .filter { it.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }
