@@ -3,17 +3,17 @@ package net.molteno.linus.prescient.sun.api.models
 import java.time.ZonedDateTime
 
 data class SweptRadioBurstEvent(
-    override val region: Int,
+    override val region: Int?,
     override val eventId: Int,
 
     override val beginDatetime: ZonedDateTime,
-    override val beginQuality: String,
+    override val beginQuality: String?,
 
     override val maxDatetime: ZonedDateTime?,
-    override val maxQuality: String,
+    override val maxQuality: String?,
 
     override val endDatetime: ZonedDateTime?,
-    override val endQuality: String,
+    override val endQuality: String?,
 
     override val type: SolarEventType,
     override val observatory: SolarObservatory,
@@ -28,7 +28,7 @@ data class SweptRadioBurstEvent(
     val radioBurstType: RadioBurstType,
     /** Intensity is a relative scale 1=Minor, 2=Significant, 3=Major */
     val intensity: Int
-): SolarEvent {
+): SolarEventObservation {
     enum class RadioBurstType {
         /** Slow drift burst */
         II,

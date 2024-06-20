@@ -3,6 +3,7 @@ package net.molteno.linus.prescient.sun
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,8 +49,10 @@ fun SunRegionList(
     state: LazyListState = rememberLazyListState()
 ) {
     LazyColumn (
-        Modifier.fillMaxSize(),
-        state = state
+        Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        state = state,
+        contentPadding = PaddingValues(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(regions.entries.sortedByDescending { it.key }.toList()) {region ->
             val regionId = region.key
@@ -59,9 +62,6 @@ fun SunRegionList(
 
             ElevatedCard(
                 onClick = { onRegionSelection(if (selected) null else regionId) },
-                Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 16.dp),
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = if (selected) 5.dp else 1.dp)
             ) {
                 Column(Modifier.padding(16.dp)) {

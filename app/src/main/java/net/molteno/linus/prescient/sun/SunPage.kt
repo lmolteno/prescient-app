@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import net.molteno.linus.prescient.sun.api.HpEntry
+import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.ui.shared.rememberExitUntilCollapsedState
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
@@ -45,18 +45,20 @@ import net.molteno.linus.prescient.ui.theme.PrescientTheme
 enum class SunPageTabs(val text: String) {
     ACTIVITY("Activity"),
     REGIONS("Regions"),
+    EVENTS("Events"),
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SunPage(
     regions: Map<Int, List<SolarRegionObservation>>,
+    solarEvents: Map<Int, List<SolarEventObservation>>?,
     currentHp: List<HpEntry>?,
 ) {
     val configuration = LocalConfiguration.current
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { SunPageTabs.entries.size } )
-    var selectedTab by remember { mutableStateOf(SunPageTabs.ACTIVITY) }
+    var selectedTab by remember { mutableStateOf(SunPageTabs.EVENTS) }
 
     var selectedRegion by remember { mutableStateOf<Int?>(null) }
 
@@ -68,11 +70,13 @@ fun SunPage(
     val objectBarState = rememberExitUntilCollapsedState(objectHeightRange)
     val regionListState = rememberLazyListState()
     val activityListState = rememberLazyListState()
+    val eventListState = rememberLazyListState()
     val listState by remember(selectedTab) {
         derivedStateOf {
             when (selectedTab) {
                 SunPageTabs.ACTIVITY -> activityListState
                 SunPageTabs.REGIONS -> regionListState
+                SunPageTabs.EVENTS -> eventListState
             }
         }
     }
@@ -155,6 +159,9 @@ fun SunPage(
                         SunPageTabs.ACTIVITY.ordinal ->
                             SunActivityList(hp = currentHp, state = activityListState)
 
+                        SunPageTabs.EVENTS.ordinal ->
+                            SunEventList(events = solarEvents, state = eventListState)
+
                         SunPageTabs.REGIONS.ordinal -> SunRegionList(
                             regions,
                             selectedRegion = selectedRegion,
@@ -173,7 +180,7 @@ fun SunPage(
 fun SunPagePreview() {
     PrescientTheme {
         Surface {
-            SunPage(regions = emptyMap(), currentHp = null)
+            SunPage(regions = emptyMap(), solarEvents = emptyMap(), currentHp = null)
         }
     }
 }

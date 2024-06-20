@@ -6,7 +6,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import net.molteno.linus.prescient.sun.api.models.SolarEventDto
+import net.molteno.linus.prescient.sun.api.models.SolarEventObservationDto
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservationDto
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,7 +20,7 @@ interface SwpcApi {
     suspend fun fetchSolarRegions(): List<SolarRegionObservationDto>
 
     @GET("/json/edited_events.json")
-    suspend fun fetchEvents(): List<SolarEventDto>
+    suspend fun fetchEvents(): List<SolarEventObservationDto>
 }
 
 @Module

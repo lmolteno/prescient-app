@@ -3,17 +3,17 @@ package net.molteno.linus.prescient.sun.api.models
 import java.time.ZonedDateTime
 
 data class XrayEvent(
-    override val region: Int,
+    override val region: Int?,
     override val eventId: Int,
 
     override val beginDatetime: ZonedDateTime,
-    override val beginQuality: String,
+    override val beginQuality: String?,
 
     override val maxDatetime: ZonedDateTime?,
-    override val maxQuality: String,
+    override val maxQuality: String?,
 
     override val endDatetime: ZonedDateTime?,
-    override val endQuality: String,
+    override val endQuality: String?,
 
     override val type: SolarEventType,
     override val observatory: SolarObservatory,
@@ -24,6 +24,6 @@ data class XrayEvent(
     override val changeFlag: Int,
 
     /** MHz */
-    val frequency: Int,
+    val frequency: String,
     val xRayClass: String
-): SolarEvent
+): SolarEventObservation

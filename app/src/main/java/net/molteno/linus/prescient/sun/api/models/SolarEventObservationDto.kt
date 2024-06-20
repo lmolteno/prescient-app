@@ -6,13 +6,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
-data class SolarEventDto (
+data class SolarEventObservationDto (
         val beginDatetime: String?,
-        val beginQuality: String,
+        val beginQuality: String?,
         val maxDatetime: String?,
-        val maxQuality: String,
+        val maxQuality: String?,
         val endDatetime: String?,
-        val endQuality: String,
+        val endQuality: String?,
         val observatory: String,
         val quality: String,
         val type: String,
@@ -30,7 +30,7 @@ data class SolarEventDto (
         val particulars8: String?,
         val particulars9: String?,
         val particulars10: String,
-        val region: Int,
+        val region: Int?,
         val bin: Int,
         val age: String?,
         val statusCode: Int,
@@ -38,8 +38,8 @@ data class SolarEventDto (
         val changeFlag: Int
     )
 
-interface SolarEvent {
-    val region: Int
+interface SolarEventObservation {
+    val region: Int?
     val eventId: Int
 
     /**
@@ -55,17 +55,17 @@ interface SolarEvent {
     event end time.
      */
     val beginDatetime: ZonedDateTime
-    val beginQuality: String
+    val beginQuality: String?
 
     val maxDatetime: ZonedDateTime?
-    val maxQuality: String
+    val maxQuality: String?
 
     val endDatetime: ZonedDateTime?
-    val endQuality: String
+    val endQuality: String?
 
     val type: SolarEventType
     val observatory: SolarObservatory
-    val quality: String
+    val quality: String?
 
     val statusCode: Int
     val statusText: String
@@ -73,7 +73,7 @@ interface SolarEvent {
 }
 
 data class GenericSolarEvent(
-    override val region: Int,
+    override val region: Int?,
     override val eventId: Int,
 
     /**
@@ -89,22 +89,22 @@ data class GenericSolarEvent(
         event end time.
      */
     override val beginDatetime: ZonedDateTime,
-    override val beginQuality: String,
+    override val beginQuality: String?,
 
     override val maxDatetime: ZonedDateTime?,
-    override val maxQuality: String,
+    override val maxQuality: String?,
 
     override val endDatetime: ZonedDateTime?,
-    override val endQuality: String,
+    override val endQuality: String?,
 
     override val type: SolarEventType,
     override val observatory: SolarObservatory,
-    override val quality: String,
+    override val quality: String?,
 
     override val statusCode: Int,
     override val statusText: String,
     override val changeFlag: Int
-): SolarEvent
+): SolarEventObservation
 
 enum class SolarEventType(val code: String) {
     BrightSurge("BSL"),
@@ -141,17 +141,17 @@ enum class SolarObservatory(val code: String) {
     Goes19("G19"),
 }
 
-fun SolarEventDto.toSolarEvent(): SolarEvent? {
+fun SolarEventObservationDto.toSolarEventObservation(): SolarEventObservation? {
     val particulars = listOf(particulars1, particulars2, particulars3, particulars4, particulars5, particulars6, particulars7, particulars8, particulars9, particulars10)
     val type = SolarEventType.entries.firstOrNull { it.code == type }
     if (type == null) {
-        Timber.d("Unknown event type: $type")
+        Timber.d("Unknown event type: ${this.type}")
         return null
     }
 
     val observatory = SolarObservatory.entries.firstOrNull { it.code == observatory }
     if (observatory == null) {
-        Timber.d("Unknown observatory: $observatory")
+        Timber.d("Unknown observatory: ${this.observatory}")
         return null
     }
 
@@ -163,7 +163,6 @@ fun SolarEventDto.toSolarEvent(): SolarEvent? {
     when (type) {
         SolarEventType.XRayEvent -> {
             if (particulars1 == null) return null
-            val frequencyInt = frequency.toIntOrNull() ?: return null
 
             return XrayEvent(
                 beginDatetime = beginDatetime,
@@ -175,7 +174,7 @@ fun SolarEventDto.toSolarEvent(): SolarEvent? {
                 observatory = observatory,
                 quality = quality,
                 type = type,
-                frequency = frequencyInt,
+                frequency = frequency,
                 region = region,
                 eventId = bin,
                 statusCode = statusCode,

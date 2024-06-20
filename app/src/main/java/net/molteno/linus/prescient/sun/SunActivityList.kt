@@ -1,9 +1,8 @@
 package net.molteno.linus.prescient.sun
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -19,13 +18,13 @@ fun SunActivityList(
     state: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
-        Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
         state = state,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(vertical = 16.dp)
     ) {
-        item {
-            Spacer(Modifier.height(0.dp))
-        }
         item {
             SunHpChartCard(hp)
         }

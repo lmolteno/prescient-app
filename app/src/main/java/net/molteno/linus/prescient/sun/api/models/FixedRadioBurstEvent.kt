@@ -3,17 +3,17 @@ package net.molteno.linus.prescient.sun.api.models
 import java.time.ZonedDateTime
 
 data class FixedRadioBurstEvent(
-    override val region: Int,
+    override val region: Int?,
     override val eventId: Int,
 
     override val beginDatetime: ZonedDateTime,
-    override val beginQuality: String,
+    override val beginQuality: String?,
 
     override val maxDatetime: ZonedDateTime?,
-    override val maxQuality: String,
+    override val maxQuality: String?,
 
     override val endDatetime: ZonedDateTime?,
-    override val endQuality: String,
+    override val endQuality: String?,
 
     override val type: SolarEventType,
     override val observatory: SolarObservatory,
@@ -30,4 +30,4 @@ data class FixedRadioBurstEvent(
      * 	       1 flux unit = 10-22 Wm-2 Hz-1
      */
     val maxBrightness: Int
-): SolarEvent
+): SolarEventObservation
