@@ -24,9 +24,9 @@ import net.molteno.linus.prescient.sun.api.NoaaApiModule
 import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
+import timber.log.Timber
 import java.time.LocalDate
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -77,25 +77,18 @@ fun Sun(
             )
         )
         translate(center.x, center.y) {
-            regions.forEach { region ->
-//                val innerPath = Path()
+            regions.forEachIndexed { index, region ->
                 val outerPath = Path()
-//                drawOrthoCircle(
-//                    region.longitude,
-//                    region.latitude,
-//                    0.015f * region.area,
-//                    sunRadius
-//                ).map {
-//                    innerPath.lineTo(-it.x, -it.y)
-//                }
+                val radius = (22f * sqrt(region.area.toFloat())) / 100f
+                if (index == 1) Timber.d("radius: $radius")
+
                 drawOrthoCircle(
                     region.longitude,
                     region.latitude,
-                    (max(50f * sqrt(region.area.toFloat()), 10f) * sunRadius) / 100_000f,
+                    radius,
                     sunRadius
-                ).map {
-                    outerPath.lineTo(-it.x, -it.y)
-                }
+                ).map { outerPath.lineTo(-it.x, -it.y) }
+
                 if (selectedRegion == region.region) {
                     drawPath(outerPath, colorSunSpotSelected)
                     val center = -orthographicProject(region.longitude.toDouble(), region.latitude.toDouble(), sunRadius)
@@ -105,7 +98,6 @@ fun Sun(
                 } else {
                     drawPath(outerPath, colorSunSpotCenter)
                 }
-//                drawPath(innerPath, colorSunSpotCenter)
             }
         }
     }

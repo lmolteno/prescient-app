@@ -1,20 +1,24 @@
 package net.molteno.linus.prescient.sun
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.ZeroCornerSize
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -35,6 +40,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
@@ -48,7 +55,7 @@ enum class SunPageTabs(val text: String) {
     EVENTS("Events"),
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SunPage(
     regions: Map<Int, List<SolarRegionObservation>>,
@@ -63,8 +70,7 @@ fun SunPage(
     var selectedRegion by remember { mutableStateOf<Int?>(null) }
 
     val objectHeightRange = with(LocalDensity.current) {
-        80.dp.roundToPx()..configuration.screenWidthDp.dp.roundToPx()
-//        30.dp.roundToPx()..80.dp.roundToPx()
+        160.dp.roundToPx()..configuration.screenWidthDp.dp.roundToPx()
     }
 
     val objectBarState = rememberExitUntilCollapsedState(objectHeightRange)
@@ -116,9 +122,16 @@ fun SunPage(
         Row(
             Modifier
                 .height(with(density) { objectBarState.height.toDp() })
-                .graphicsLayer { translationY = objectBarState.offset }
+                .padding(lerp(10.dp, 40.dp, objectBarState.progress))
+                .fillMaxWidth()
+                .graphicsLayer { translationY = objectBarState.offset },
+            horizontalArrangement = Arrangement.Center
         ) {
-            Box(Modifier.aspectRatio(1f)) {
+            Surface(
+                shape = RoundedCornerShape(50),
+                shadowElevation = 10.dp,
+                modifier = Modifier
+                    .aspectRatio(1f)) {
                 Sun(
                     regions.values.mapNotNull { regions -> regions.maxByOrNull { it.observedDate } },
                     selectedRegion = selectedRegion
@@ -126,49 +139,72 @@ fun SunPage(
             }
         }
 
-        Row(
+        Box(
             Modifier
                 .fillMaxSize()
                 .graphicsLayer { translationY = objectBarState.height }
                 .padding(bottom = with(density) { objectBarState.height.toDp() })
         ) {
-            Column {
-                TabRow(selectedTab.ordinal) {
-                    SunPageTabs.entries.forEach { currentTab ->
-                        Tab(
+            Box(Modifier.zIndex(10f)) {
+                SingleChoiceSegmentedButtonRow(
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                ) {
+                    SunPageTabs.entries.forEachIndexed { index, currentTab ->
+                        SegmentedButton(
                             selected = selectedTab == currentTab,
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.outline,
                             onClick = {
                                 scope.launch {
                                     pagerState.animateScrollToPage(currentTab.ordinal)
                                 }
                             },
-                            text = { Text(text = currentTab.text) },
-                        )
+                            icon = { },
+                            shape = when (index) {
+                                0 -> RoundedCornerShape(50)
+                                    .copy(topEnd = ZeroCornerSize, bottomEnd = ZeroCornerSize)
+
+                                SunPageTabs.entries.size - 1 -> RoundedCornerShape(50)
+                                    .copy(topStart = ZeroCornerSize, bottomStart = ZeroCornerSize)
+
+                                else -> RectangleShape
+                            }
+                        ) {
+                            Text(text = currentTab.text)
+                        }
                     }
                 }
+            }
 
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(1f),
-                ) { page ->
-                    when (page) {
-                        SunPageTabs.ACTIVITY.ordinal ->
-                            SunActivityList(hp = currentHp, state = activityListState)
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp),
+                userScrollEnabled = false
+            ) { page ->
+                when (page) {
+                    SunPageTabs.ACTIVITY.ordinal ->
+                        SunActivityList(
+                            hp = currentHp,
+                            state = activityListState,
+                            internalPadding = PaddingValues(top = 20.dp)
+                        )
 
-                        SunPageTabs.EVENTS.ordinal ->
-                            SunEventList(events = solarEvents, state = eventListState)
+                    SunPageTabs.EVENTS.ordinal ->
+                        SunEventList(
+                            events = solarEvents,
+                            state = eventListState,
+                            internalPadding = PaddingValues(top = 20.dp),
+                            setSelectedRegion = { selectedRegion = it }
+                        )
 
-                        SunPageTabs.REGIONS.ordinal -> SunRegionList(
+                    SunPageTabs.REGIONS.ordinal ->
+                        SunRegionList(
                             regions,
                             selectedRegion = selectedRegion,
                             onRegionSelection = { selectedRegion = it },
-                            state = regionListState
+                            state = regionListState,
+                            internalPadding = PaddingValues(top = 20.dp)
                         )
-                    }
                 }
             }
         }

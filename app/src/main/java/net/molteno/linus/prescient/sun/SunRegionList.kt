@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,15 +49,21 @@ fun SunRegionList(
     regions: Map<Int, List<SolarRegionObservation>>,
     selectedRegion: Int? = null,
     onRegionSelection: (region: Int?) -> Unit = { },
-    state: LazyListState = rememberLazyListState()
+    state: LazyListState = rememberLazyListState(),
+    internalPadding: PaddingValues = PaddingValues()
 ) {
     LazyColumn (
         Modifier.fillMaxSize().padding(horizontal = 16.dp),
         state = state,
-        contentPadding = PaddingValues(vertical = 16.dp),
+        contentPadding = PaddingValues(
+            top = internalPadding.calculateTopPadding() + 16.dp,
+            bottom = internalPadding.calculateBottomPadding() + 16.dp,
+            start = internalPadding.calculateStartPadding(LocalLayoutDirection.current),
+            end = internalPadding.calculateEndPadding(LocalLayoutDirection.current),
+        ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(regions.entries.sortedByDescending { it.key }.toList()) {region ->
+        items(regions.entries.sortedByDescending { it.value.maxBy { it.observedDate }.area }.toList()) {region ->
             val regionId = region.key
             val observations = region.value
             val latestObservation = observations.maxBy { it.observedDate }
