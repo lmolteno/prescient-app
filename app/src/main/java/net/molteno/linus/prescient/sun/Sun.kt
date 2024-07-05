@@ -53,9 +53,6 @@ fun drawOrthoCircle(longitude: Int, latitude: Int, dotRadius: Float, bigCircleRa
     }
 }
 
-val colorSunOuter = Color(0xFF9E3E15)
-val colorSunMid = Color(0xFFB96F1F)
-val colorSunCenter = Color(0xFFF8AC1F)
 val colorSunSpotSelected = Color(0xFFD24407)
 val colorSunSpotCenter = Color(0xFF000000)
 
@@ -71,9 +68,14 @@ fun Sun(
         val sunRadius = this.size.minDimension / 2f
         drawCircle(
             Brush.radialGradient(
-                0f to colorSunCenter,
-                0.8f to colorSunMid,
-                1f to colorSunOuter
+                0f to Color(0XFFfcb62f),
+                0.58055f to Color(0xFFfca105),
+                0.79028f to Color(0xFFfd8d01),
+                0.89514f to Color(0xFFfd7501),
+                0.94757f to Color(0xFFfd6200),
+                0.97378f to Color(0xFFf95601),
+                0.98689f to Color(0xFFd34701),
+                1f to Color(0xFF7b2b02),
             )
         )
         translate(center.x, center.y) {

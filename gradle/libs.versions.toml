@@ -18,6 +18,7 @@ timber = "5.0.1"
 ksp-plugin = "1.9.22-1.0.17"
 multidex = "2.0.1"
 vico = "2.0.0-alpha.20"
+fadingEdges = "1.0.3"
 
 [libraries]
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
@@ -45,6 +46,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+fadingEdges = { group = "com.github.GIGAMOLE", name = "ComposeFadingEdges", version.ref = "fadingEdges" }
 
 
 [plugins]

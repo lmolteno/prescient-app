@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.commons.net.commons.net)
     implementation(libs.timber)
+    implementation(libs.fadingEdges)
 
     implementation(libs.vico.compose.m3)
 
