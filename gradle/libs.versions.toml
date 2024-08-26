@@ -1,21 +1,25 @@
 [versions]
-activityKtx = "1.9.0"
-agp = "8.4.1"
+activityKtx = "1.9.1"
+agp = "8.5.2"
 commonsNetVersion = "3.6"
-converterGson = "2.9.0"
+converterGson = "2.11.0"
+converterKotlinx = "2.11.0"
 hiltAndroid = "2.50"
 hilt-compose = "1.2.0"
-kotlin = "1.9.22"
+kotlin = "2.0.20"
 coreKtx = "1.13.1"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-activityCompose = "1.9.0"
-composeBom = "2024.05.00"
-lifecycleKtx = "2.8.0"
-retrofit = "2.9.0"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+activityCompose = "1.9.1"
+composeBom = "2024.08.00"
+kotlinxSerialization = "1.6.3"
+kotlinxDatetime = "0.6.1"
+lifecycleKtx = "2.8.4"
+retrofit = "2.11.0"
+kotlinxSerializationPlugin = "2.0.0"
 timber = "5.0.1"
-ksp-plugin = "1.9.22-1.0.17"
+ksp-plugin = "2.0.20-1.0.24"
 multidex = "2.0.1"
 vico = "2.0.0-alpha.20"
 fadingEdges = "1.0.3"
@@ -27,6 +31,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleKtx" }
 commons-net-commons-net = { module = "commons-net:commons-net", version.ref = "commonsNetVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+converter-kotlinx = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "converterKotlinx" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-compose" }
@@ -43,6 +48,9 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinxSerialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
@@ -54,4 +62,6 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerializationPlugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

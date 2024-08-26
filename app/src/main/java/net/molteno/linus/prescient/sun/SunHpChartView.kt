@@ -49,7 +49,6 @@ import com.gigamole.composefadingedges.horizontalFadingEdges
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import net.molteno.linus.prescient.utils.lerp
-import timber.log.Timber
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.math.abs
@@ -120,7 +119,7 @@ fun SunHpChartCard(hp: List<HpEntry>?) {
                                     gravity = FadingEdgesGravity.All,
                                     length = 50.dp
                                 ),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(0.dp),
                         ) {
                             item {
                                 Spacer(Modifier.width(((chartWidthPx / density.density) / 2).dp - (width / 2.0).dp))
@@ -135,7 +134,6 @@ fun SunHpChartCard(hp: List<HpEntry>?) {
                                         itemInfo?.let {
                                             val targetPosition = lazyListState.layoutInfo.viewportEndOffset / 2.0
                                             val distanceToTarget = abs((it.offset + it.size / 2.0) - targetPosition)
-                                            Timber.d("item at ${hpEntry.time} is at ${it.offset} - viewport is ${lazyListState.layoutInfo.viewportEndOffset} wide")
                                             if (distanceToTarget < (it.size / 2.0 + (density.density * 4))) {
                                                 if (hpEntry != centeredElement) {
                                                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)

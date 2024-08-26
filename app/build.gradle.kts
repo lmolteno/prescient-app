@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinx.serialization)
     id("dagger.hilt.android.plugin")
 }
 
@@ -70,6 +72,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation(libs.converter.kotlinx)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.protobuf)
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.commons.net.commons.net)
     implementation(libs.timber)
     implementation(libs.fadingEdges)

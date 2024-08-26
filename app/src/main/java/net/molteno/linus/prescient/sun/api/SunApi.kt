@@ -1,10 +1,11 @@
 package net.molteno.linus.prescient.sun.api
 
+import net.molteno.linus.prescient.api.PrescientApi
+import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
-import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.models.toSolarEventObservation
-import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import timber.log.Timber
+import java.time.Instant
 import java.time.ZonedDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,7 +14,8 @@ import kotlin.math.floor
 @Singleton
 class SunApi @Inject constructor (
     private val potsdam: PotsdamApi,
-    private val swpcApi: SwpcApi
+    private val swpcApi: SwpcApi,
+    private val prescientApi: PrescientApi
 ) {
     suspend fun fetchHp30(): List<HpEntry> {
         val hp30s: MutableList<HpEntry> = mutableListOf()
@@ -49,8 +51,8 @@ class SunApi @Inject constructor (
 
     suspend fun fetchSolarRegions(): Map<Int, List<SolarRegionObservation>> {
         try {
-            val regions = swpcApi.fetchSolarRegions().mapNotNull { it.toSolarRegionObservation() }
-            val mostRecentObservations = regions.maxOf { it.observedDate}
+            val regions = prescientApi.fetchRegions(Instant.now().minusSeconds(86400), Instant.now())
+            val mostRecentObservations = regions.maxOf { it.observedDate }
 
             return regions
                 .filter { it.observedDate == mostRecentObservations }

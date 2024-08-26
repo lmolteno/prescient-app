@@ -37,12 +37,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import net.molteno.linus.prescient.api.models.SolarRegionObservation
+import net.molteno.linus.prescient.api.models.SolarRegionObservationMetadata
 import net.molteno.linus.prescient.sun.api.NoaaApiModule
-import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Composable
 fun SunRegionList(
@@ -63,7 +65,7 @@ fun SunRegionList(
         ),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(regions.entries.sortedByDescending { it.value.maxBy { it.observedDate }.area }.toList()) {region ->
+        items(regions.entries.sortedByDescending { it.value.maxBy { it.observedDate }.metadata.area }.toList()) {region ->
             val regionId = region.key
             val observations = region.value
             val latestObservation = observations.maxBy { it.observedDate }
@@ -85,13 +87,13 @@ fun SunRegionList(
                         Spacer(Modifier.weight(1f))
                         ScoreCard(
                             "area",
-                            "${latestObservation.area}",
+                            "${latestObservation.metadata.area}",
                             Alignment.End,
                             Modifier.width(50.dp)
                         )
                         ScoreCard(
                             "spots",
-                            "${latestObservation.numberSpots}",
+                            "${latestObservation.metadata.numberSpots}",
                             Alignment.End,
                             Modifier.width(50.dp)
                         )
@@ -105,13 +107,13 @@ fun SunRegionList(
                     Row {
                         ScoreCard(
                             "magnetic",
-                            "${latestObservation.magClass?.toGreek()}",
+                            "${latestObservation.metadata.magClass?.toGreek()}",
                             Alignment.Start,
                             Modifier.width(100.dp)
                         )
                         ScoreCard(
                             "spot",
-                            "${latestObservation.spotClass}",
+                            "${latestObservation.metadata.spotClass}",
                             Alignment.Start,
                             Modifier.width(100.dp)
                         )
@@ -126,25 +128,25 @@ fun SunRegionList(
                             Row {
                                 ScoreCard(
                                     "X x-ray",
-                                    "${latestObservation.xXrayEvents}",
+                                    "${latestObservation.metadata.xXrayEvents}",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
                                 ScoreCard(
                                     "M x-ray",
-                                    "${latestObservation.mXrayEvents}",
+                                    "${latestObservation.metadata.mXrayEvents}",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
                                 ScoreCard(
                                     "C x-ray",
-                                    "${latestObservation.cXrayEvents}",
+                                    "${latestObservation.metadata.cXrayEvents}",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
                                 ScoreCard(
                                     "proton",
-                                    "${latestObservation.protonEvents}",
+                                    "${latestObservation.metadata.protonEvents}",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
@@ -157,25 +159,25 @@ fun SunRegionList(
                             Row {
                                 ScoreCard(
                                     "X x-ray",
-                                    "${latestObservation.xFlareProbability}%",
+                                    "${latestObservation.metadata.xFlareProbability}%",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
                                 ScoreCard(
                                     "M x-ray",
-                                    "${latestObservation.mFlareProbability}%",
+                                    "${latestObservation.metadata.mFlareProbability}%",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
                                 ScoreCard(
                                     "C x-ray",
-                                    "${latestObservation.cFlareProbability}%",
+                                    "${latestObservation.metadata.cFlareProbability}%",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
                                 ScoreCard(
                                     "proton",
-                                    "${latestObservation.protonProbability}%",
+                                    "${latestObservation.metadata.protonProbability}%",
                                     Alignment.Start,
                                     Modifier.width(50.dp)
                                 )
@@ -220,9 +222,14 @@ fun SunRegionListPreview() {
     var regions by remember {
         mutableStateOf(mapOf(
             3857 to listOf(SolarRegionObservation(
+                id = 0,
                 region = 3857,
+                observedDate = Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
+                firstDate = Clock.System.now(),
+                longitude = 17,
+                latitude = -8,
+                metadata = SolarRegionObservationMetadata(
                 carringtonLongitude = 100,
-                observedDate = LocalDate.now(),
                 spotClass = null,
                 magClass = null,
                 magString = null,
@@ -234,14 +241,12 @@ fun SunRegionListPreview() {
                 xXrayEvents = 1,
                 protonEvents = null,
                 status = "idk",
-                firstDate = LocalDateTime.now(),
                 xFlareProbability = 1,
                 cFlareProbability = 0,
                 mFlareProbability = 0,
                 protonProbability = 0,
-                longitude = 17,
-                latitude = -8,
                 area = 100
+                )
             ))
         ) )
     }
@@ -251,9 +256,9 @@ fun SunRegionListPreview() {
             val rawRegions = noaaApi.fetchSolarRegions()
                 .mapNotNull { it.toSolarRegionObservation() }
 
-            regions = rawRegions
-                .filter { it.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }
-                .groupBy { it.region }
+//            regions = rawRegions
+//                .filter { it.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }
+//                .groupBy { it.region }
         }
     }
 

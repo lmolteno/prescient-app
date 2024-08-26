@@ -28,19 +28,19 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.molteno.linus.prescient.api.PrescientApiModule
 import net.molteno.linus.prescient.earth.Earth
 import net.molteno.linus.prescient.moon.Moon
 import net.molteno.linus.prescient.sun.SunPage
 import net.molteno.linus.prescient.sun.api.HpEntry
-import net.molteno.linus.prescient.sun.api.NoaaApiModule
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
-import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
-import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
+import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
+import java.time.Instant
 
 @Composable
 fun MainPage() {
-    val viewModel: TestViewModel = hiltViewModel()
+    val viewModel: MainViewModel = hiltViewModel()
     val currentHp by viewModel.hp30.collectAsState()
     val solarEvents by viewModel.solarEvents.collectAsState()
     val solarRegions by viewModel.solarRegions.collectAsState()
@@ -110,16 +110,15 @@ fun HpDisplay(hp30: HpEntry?) {
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MainPagePreview() {
-    val noaaApi = remember { NoaaApiModule.providesNoaaApi() }
+    val noaaApi = remember { PrescientApiModule.providesPrescientApi() }
     var regions by remember { mutableStateOf<Map<Int, List<SolarRegionObservation>>>(emptyMap()) }
 
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
-            val rawRegions = noaaApi.fetchSolarRegions()
-                .mapNotNull { it.toSolarRegionObservation() }
+            val rawRegions = noaaApi.fetchRegions(Instant.now().minusSeconds(86400), Instant.now())
 
             regions = rawRegions
-                .filter { it.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }
+                .filter { it.metadata.numberSpots > 0 && it.observedDate == rawRegions.maxBy { r -> r.observedDate }.observedDate }
                 .groupBy { it.region }
         }
     }

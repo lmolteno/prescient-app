@@ -1,0 +1,168 @@
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="51.268"
+            android:viewportHeight="51.268">
+            <group android:scaleX="0.6111111"
+                android:scaleY="0.6111111"
+                android:translateX="9.968778"
+                android:translateY="9.968778">
+                <group
+                    android:name="corona"
+                    android:scaleX="0.5"
+                    android:pivotX="25.634"
+                    android:pivotY="25.634"
+                    >
+                    <path
+                        android:pathData="M25.634,25.634m-25.634,0a25.634,25.634 0,1 1,51.268 0a25.634,25.634 0,1 1,-51.268 0"
+                        android:strokeWidth="1.68902"
+                        android:strokeColor="#00000000">
+                        <aapt:attr name="android:fillColor">
+                            <gradient
+                                android:centerX="25.634"
+                                android:centerY="25.634"
+                                android:gradientRadius="25.634"
+                                android:type="radial">
+                                <item android:offset="0.733" android:color="#FFF58E32"/>
+                                <item android:offset="1" android:color="#00FFB97A"/>
+                            </gradient>
+                        </aapt:attr>
+                    </path>
+                </group>
+                <group android:name="moon">
+                    <path
+                        android:name="moon_path"
+                        android:pathData="M25.634,25.634m-16.55,0a16.55,16.55 0,1 1,33.099 0a16.55,16.55 0,1 1,-33.099 0"
+                        android:strokeWidth="1.2"
+                        android:fillColor="#002a2f"
+                        android:fillAlpha="0"
+                        android:strokeColor="#00000000"/>
+                </group>
+            </group>
+        </vector>
+<!--        <vector-->
+<!--            android:name="vector"-->
+<!--            android:width="51dp"-->
+<!--            android:height="51dp"-->
+<!--            android:viewportWidth="51"-->
+<!--            android:viewportHeight="51">-->
+<!--            <group-->
+<!--                android:name="corona_1"-->
+<!--                android:pivotX="24"-->
+<!--                android:pivotY="24">-->
+<!--                <path-->
+<!--                    android:name="corona"-->
+<!--                    android:pathData="M 25.634 0 C 20.211 -0.017 14.919 1.687 10.525 4.867 C 6.131 8.047 2.858 12.54 1.178 17.697 C -0.501 22.855 -0.501 28.414 1.178 33.571 C 2.858 38.728 6.131 43.222 10.525 46.401 C 14.919 49.581 20.211 51.286 25.634 51.268 C 32.43 51.268 38.955 48.566 43.76 43.76 C 48.566 38.955 51.268 32.43 51.268 25.634 C 51.268 18.838 48.566 12.314 43.76 7.508 C 38.955 2.703 32.43 0 25.634 0 Z"-->
+<!--                    android:fillColor=-->
+<!--&lt;!&ndash;                    android:fillColor="#f58e32"&ndash;&gt;-->
+<!--                    android:strokeWidth="1"-->
+<!--                />-->
+<!--            </group>-->
+<!--            <group android:name="moon_1">-->
+<!--                <path-->
+<!--                    android:name="moon"-->
+<!--                    android:pathData="M 25.634 9.085 C 21.247 9.085 17.034 10.829 13.932 13.932 C 10.829 17.034 9.085 21.247 9.085 25.634 C 9.085 30.022 10.829 34.234 13.932 37.337 C 17.034 40.439 21.247 42.184 25.634 42.184 C 30.022 42.184 34.234 40.439 37.337 37.337 C 40.439 34.234 42.184 30.022 42.184 25.634 C 42.184 21.247 40.439 17.034 37.337 13.932 C 34.234 10.829 30.022 9.085 25.634 9.085 Z"-->
+<!--                    android:fillColor="#002a2f"-->
+<!--                    android:strokeWidth="1"/>-->
+<!--            </group>-->
+<!--        </vector>-->
+    </aapt:attr>
+    <target android:name="moon_path">
+        <aapt:attr name="android:animation">
+            <set>
+            <objectAnimator
+                android:propertyName="fillAlpha"
+                android:startOffset="50"
+                android:duration="50"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:valueType="floatType"
+                android:interpolator="@android:anim/decelerate_interpolator"/>
+<!--            <objectAnimator-->
+<!--                android:propertyName="fillAlpha"-->
+<!--                android:startOffset="400"-->
+<!--                android:duration="50"-->
+<!--                android:valueFrom="1"-->
+<!--                android:valueTo="0"-->
+<!--                android:valueType="floatType"-->
+<!--                android:interpolator="@android:anim/accelerate_interpolator"/>-->
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="moon">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="translateX"
+                    android:duration="200"
+                    android:valueFrom="-54"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/decelerate_interpolator"/>
+                <objectAnimator
+                    android:propertyName="translateY"
+                    android:duration="200"
+                    android:valueFrom="-54"
+                    android:valueTo="0"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/decelerate_interpolator"/>
+<!--                <objectAnimator-->
+<!--                    android:propertyName="translateX"-->
+<!--                    android:startOffset="300"-->
+<!--                    android:duration="200"-->
+<!--                    android:valueFrom="0"-->
+<!--                    android:valueTo="54"-->
+<!--                    android:valueType="floatType"-->
+<!--                    android:interpolator="@android:anim/accelerate_interpolator"/>-->
+<!--                <objectAnimator-->
+<!--                    android:propertyName="translateY"-->
+<!--                    android:startOffset="300"-->
+<!--                    android:duration="200"-->
+<!--                    android:valueFrom="0"-->
+<!--                    android:valueTo="54"-->
+<!--                    android:valueType="floatType"-->
+<!--                    android:interpolator="@android:anim/accelerate_interpolator"/>-->
+            </set>
+        </aapt:attr>
+    </target>
+    <target android:name="corona">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:duration="200"
+                    android:valueFrom="0.6"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/decelerate_interpolator"/>
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:duration="200"
+                    android:valueFrom="0.6"
+                    android:valueTo="1"
+                    android:valueType="floatType"
+                    android:interpolator="@android:anim/decelerate_interpolator"/>
+<!--                <objectAnimator-->
+<!--                    android:propertyName="scaleX"-->
+<!--                    android:startOffset="300"-->
+<!--                    android:duration="200"-->
+<!--                    android:valueFrom="1"-->
+<!--                    android:valueTo="0.6"-->
+<!--                    android:valueType="floatType"-->
+<!--                    android:interpolator="@android:anim/accelerate_interpolator"/>-->
+<!--                <objectAnimator-->
+<!--                    android:propertyName="scaleY"-->
+<!--                    android:startOffset="300"-->
+<!--                    android:duration="200"-->
+<!--                    android:valueFrom="1"-->
+<!--                    android:valueTo="0.6"-->
+<!--                    android:valueType="floatType"-->
+<!--                    android:interpolator="@android:anim/accelerate_interpolator"/>-->
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

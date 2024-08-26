@@ -20,9 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.NoaaApiModule
-import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
-import net.molteno.linus.prescient.sun.api.models.toSolarRegionObservation
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import timber.log.Timber
 import java.time.LocalDate
@@ -81,7 +80,7 @@ fun Sun(
         translate(center.x, center.y) {
             regions.forEachIndexed { index, region ->
                 val outerPath = Path()
-                val radius = (22f * sqrt(region.area.toFloat())) / 100f
+                val radius = (22f * sqrt(region.metadata.area.toFloat())) / 100f
                 if (index == 1) Timber.d("radius: $radius")
 
                 drawOrthoCircle(
@@ -113,9 +112,9 @@ fun SunPreview() {
 
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
-            regions = noaaApi.fetchSolarRegions()
-                .mapNotNull { it.toSolarRegionObservation() }
-                .filter { it.observedDate == LocalDate.now().minusDays(1) }
+//            regions = noaaApi.fetchSolarRegions()
+//                .mapNotNull { it.toSolarRegionObservation() }
+//                .filter { it.observedDate == LocalDate.now().minusDays(1) }
         }
     }
 

@@ -43,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
+import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
-import net.molteno.linus.prescient.sun.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.ui.shared.rememberExitUntilCollapsedState
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 
