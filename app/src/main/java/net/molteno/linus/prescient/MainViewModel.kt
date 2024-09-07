@@ -6,11 +6,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import mil.nga.sf.MultiPolygon
+import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.earth.api.EarthApi
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.sun.api.SunApi
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
-import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import javax.inject.Inject
 
 
@@ -19,6 +20,7 @@ class MainViewModel @Inject constructor(private val sunApi: SunApi, private val 
     val solarEvents = MutableStateFlow<Map<Int, List<SolarEventObservation>>?>(null)
     val hp30 = MutableStateFlow<List<HpEntry>?>(null)
     val solarRegions = MutableStateFlow<Map<Int, List<SolarRegionObservation>>?>(null)
+    val coastlines = MutableStateFlow<List<MultiPolygon>>(emptyList())
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -31,7 +33,7 @@ class MainViewModel @Inject constructor(private val sunApi: SunApi, private val 
             solarEvents.value = sunApi.fetchSolarEvents()
         }
         viewModelScope.launch(Dispatchers.IO) {
-            earthApi.getCoastlines()
+            coastlines.value = earthApi.getCoastlines()
         }
     }
 }

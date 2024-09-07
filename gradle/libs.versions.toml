@@ -1,4 +1,5 @@
 [versions]
+accompanistPermissions = "0.36.0"
 activityKtx = "1.9.1"
 agp = "8.5.2"
 commonsNetVersion = "3.6"
@@ -6,6 +7,7 @@ converterGson = "2.11.0"
 converterKotlinx = "2.11.0"
 hiltAndroid = "2.50"
 hilt-compose = "1.2.0"
+kastro = "0.3.0"
 kotlin = "2.0.20"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -18,13 +20,16 @@ kotlinxDatetime = "0.6.1"
 lifecycleKtx = "2.8.4"
 retrofit = "2.11.0"
 kotlinxSerializationPlugin = "2.0.0"
+sfWkb = "2.2.3"
 timber = "5.0.1"
 ksp-plugin = "2.0.20-1.0.24"
 multidex = "2.0.1"
 vico = "2.0.0-alpha.20"
 fadingEdges = "1.0.3"
+playServicesLocation = "21.3.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,13 +53,16 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+kastro = { module = "dev.jamesyox:kastro", version.ref = "kastro" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinxSerialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+sf-wkb = { module = "mil.nga.sf:sf-wkb", version.ref = "sfWkb" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 fadingEdges = { group = "com.github.GIGAMOLE", name = "ComposeFadingEdges", version.ref = "fadingEdges" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 
 [plugins]

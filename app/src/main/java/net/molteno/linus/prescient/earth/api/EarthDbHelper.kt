@@ -8,6 +8,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import mil.nga.sf.Geometry
+import mil.nga.sf.GeometryType
+import mil.nga.sf.MultiPolygon
+import mil.nga.sf.util.SFException
+import mil.nga.sf.wkb.GeometryReader
 import timber.log.Timber
 import java.io.FileOutputStream
 import java.io.IOException
@@ -16,7 +21,7 @@ import java.io.OutputStream
 import javax.inject.Singleton
 
 
-private const val DATABASE_NAME = "world-land-areas-110-million.gpkg"
+private const val DATABASE_NAME = "land_areas_simplified.gpkg"
 private const val DATABASE_VERSION = 10200 // somehow in the gpkg
 private const val DB_PATH = "/databases/"
 
@@ -43,15 +48,27 @@ class EarthDb(private val context: Context): SQLiteOpenHelper(context, DATABASE_
         // nothing yet - db is static
     }
 
-    fun getCoastlines() {
-        val cursor = this.readableDatabase.query("world_land_areas_110_million", null, null, null, null, null, null)
+    fun getCoastlines(): List<MultiPolygon> {
+        val cursor = this.readableDatabase.query("simplified", null, null, null, null, null, null)
+        val coastlines = mutableListOf<MultiPolygon>()
+
         with(cursor) {
             while (moveToNext()) {
-                val geom = getBlob(getColumnIndexOrThrow("geom"))
-                geom?.parse()
+                val geomBytes = getBlob(getColumnIndexOrThrow("geom"))
+                val geom = geomBytes?.parse() ?: continue
+                if (geom.geometryType != GeometryType.MULTIPOLYGON) {
+                    Timber.d("Found non-multipolygon coastline")
+                    continue
+                }
+
+                coastlines += geom as MultiPolygon
             }
         }
         cursor.close()
+
+        Timber.d("Decoded ${coastlines.size} coastlines")
+
+        return coastlines
     }
 
     override fun onDowngrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -89,9 +106,29 @@ class EarthDb(private val context: Context): SQLiteOpenHelper(context, DATABASE_
     }
 }
 
-fun ByteArray.parse() {
-//    val geopackage = this.;
-    val bigEndian = this[0] == 0.toByte()
+fun ByteArray.parse(): Geometry? {
+    val valid = this.slice(0..1).toByteArray().contentEquals("GP".toByteArray())
+
+    if (!valid) { return null; }
+    // val version = this[2] == 0.toByte()
+    val flags = this[3].toUInt()
+    val envelopeType = (flags shr 1) and 7u
+    val envelopeLength = when(envelopeType) {
+        0u -> 0
+        1u -> 32
+        2u -> 48
+        3u -> 48
+        4u -> 64
+        else -> return null
+    }
+
+    val wkb = this.sliceArray(8 + envelopeLength..<size)
+    return try {
+        GeometryReader.readGeometry(wkb)
+    } catch (e: SFException) {
+        Timber.e("Failed to parse geometry", e)
+        return null
+    }
 }
 
 @Module

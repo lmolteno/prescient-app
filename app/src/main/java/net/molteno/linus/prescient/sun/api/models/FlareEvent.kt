@@ -20,7 +20,7 @@ data class FlareEvent(
     override val quality: String,
 
     override val statusCode: Int,
-    override val statusText: String,
+    override val statusText: String?,
     override val changeFlag: Int,
 
     val location: String,

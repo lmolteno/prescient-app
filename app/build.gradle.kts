@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,6 +77,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.protobuf)
     implementation(libs.kotlinx.datetime)
+
+    implementation(libs.sf.wkb)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.kastro)
 
     implementation(libs.commons.net.commons.net)
     implementation(libs.timber)

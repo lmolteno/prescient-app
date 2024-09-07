@@ -34,7 +34,7 @@ data class SolarEventObservationDto (
         val bin: Int,
         val age: String?,
         val statusCode: Int,
-        val statusText: String,
+        val statusText: String?,
         val changeFlag: Int
     )
 
@@ -68,7 +68,7 @@ interface SolarEventObservation {
     val quality: String?
 
     val statusCode: Int
-    val statusText: String
+    val statusText: String?
     val changeFlag: Int
 }
 
@@ -102,7 +102,7 @@ data class GenericSolarEvent(
     override val quality: String?,
 
     override val statusCode: Int,
-    override val statusText: String,
+    override val statusText: String?,
     override val changeFlag: Int
 ): SolarEventObservation
 

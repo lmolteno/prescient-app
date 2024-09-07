@@ -1,5 +1,6 @@
 package net.molteno.linus.prescient.earth
 
+import android.location.Location
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,11 +22,18 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mil.nga.sf.MultiPolygon
+import net.molteno.linus.prescient.earth.utils.LngLat
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import net.molteno.linus.prescient.ui.theme.PurpleGrey80
+import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -34,52 +42,135 @@ private val LandColor = Color(0xFF107929)
 private val SeaColor = Color(0xFF0D5588)
 private val PoleColor = Color(0xFFFFFFFF)
 
+fun orthographicProject(longitude: Double, latitude: Double, radius: Float): Offset {
+    var longRadians = Math.toRadians(longitude)
+    val latRadians = Math.toRadians(latitude)
+
+    if (abs(longitude) > 90) {
+        longRadians =  if (longitude > 0) PI / 2 else -PI / 2
+    }
+
+    return Offset(
+        x = (cos(latRadians) * sin(longRadians) * radius).toFloat(),
+        y = (sin(latRadians) * radius).toFloat()
+    )
+}
+
 @Composable
-fun Earth(phase: Float, modifier: Modifier = Modifier ) {
+fun Earth(coastlines: List<MultiPolygon>, modifier: Modifier = Modifier, location: Location? = null, subsolarPoint: LngLat? = null) {
+    val phase = (((subsolarPoint?.longitude ?: 0.0) - (location?.longitude ?: 0.0)).toFloat() / 360f)
     val stroke = Stroke(2f, cap = StrokeCap.Round)
     val leftSide = phase < 0.5
     val halfPhase = if (leftSide) phase * 2f else 2 - (phase * 2f)
 
-    Canvas(
-        modifier
-            .fillMaxSize()
-            .padding(10.dp)
-    ) {
-        val shadowPath = Path()
-        shadowPath.moveTo(0f, size.minDimension / 2.0F)
-        for (i in 1..179) {
-            val angle = Math.toRadians(i.toDouble()).toFloat()
-            val x = ((halfPhase - 0.5F) * sin(angle) * size.minDimension * if (leftSide) 1f else -1f)
-            val y = cos(angle) * size.minDimension * 0.5F
-            shadowPath.lineTo(x, y)
-        }
-        for (i in 180..359) {
-            val angle = Math.toRadians(i.toDouble()).toFloat()
-            val x = (sin(angle) * size.minDimension * 0.5F / (1 - halfPhase) * if (leftSide) 1f else -1f)
-            val y = cos(angle) * size.minDimension * 0.5F
-            shadowPath.lineTo(x, y)
-        }
-        shadowPath.close()
+    Column {
+        Canvas(
+            modifier
+                .fillMaxSize()
+                .padding(10.dp)
+        ) {
+            val landPath = Path()
 
-        translate(center.x, center.y) {
-            clipPath(shadowPath, clipOp = ClipOp.Difference) {
-                drawCircle(Brush.radialGradient(
-                    colors = (0..7).toList().map { SeaColor } + listOf(Color.Transparent),
-                    radius = (size.minDimension / 2f) * 13 / 12,
-                    center = Offset.Zero),
-                    radius = (size.minDimension / 2f) * 13 / 12,
-                    center = Offset.Zero
-                )
+            if (location != null) {
+                for (coastline in coastlines) {
+                    coastline.polygons.forEach { polygon ->
+                        var started = false
+                        polygon.exteriorRing.points.forEach { latlng ->
+                            val point = orthographicProject(latlng.x - location.longitude, latlng.y, size.minDimension / 2F)
+                            if (started) {
+                                landPath.lineTo(-point.x, point.y)
+                            } else {
+                                landPath.moveTo(-point.x, point.y)
+                                started = true
+                            }
+                        }
+                    }
+                }
             }
-            drawCircle(SeaColor, center = Offset.Zero)
-            drawPath(shadowPath, Color.Black, style = stroke)
-            drawPath(shadowPath, ShadowColor)
-        }
 
-        if (phase == 0.5f) {
-            drawCircle(ShadowColor)
+            val shadowPath = Path()
+            shadowPath.moveTo(0f, size.minDimension / 2.0F)
+            for (i in 1..179) {
+                val angle = Math.toRadians(i.toDouble()).toFloat()
+                val x = ((halfPhase - 0.5F) * sin(angle) * size.minDimension * if (leftSide) 1f else -1f)
+                val y = cos(angle) * size.minDimension * 0.5F
+                shadowPath.lineTo(x, y)
+            }
+            for (i in 180..359) {
+                val angle = Math.toRadians(i.toDouble()).toFloat()
+                val x = (sin(angle) * size.minDimension * 0.5F / (1 - halfPhase) * if (leftSide) 1f else -1f)
+                val y = cos(angle) * size.minDimension * 0.5F
+                shadowPath.lineTo(x, y)
+            }
+            shadowPath.close()
+
+            rotate(-1 * (subsolarPoint?.latitude?.toFloat() ?: 0f), center) {
+                translate(center.x, center.y) {
+                    clipPath(shadowPath, clipOp = ClipOp.Difference) {
+                        drawCircle(
+                            Brush.radialGradient(
+                                colors = (0..7).toList().map { SeaColor } + listOf(Color.Transparent),
+                                radius = (size.minDimension / 2f) * 13 / 12,
+                                center = Offset.Zero),
+                            radius = (size.minDimension / 2f) * 13 / 12,
+                            center = Offset.Zero
+                        )
+                    }
+                    drawCircle(SeaColor, center = Offset.Zero,)
+                }
+            }
+
+            rotate(180f, center) {
+                translate(center.x, center.y) {
+                    drawPath(landPath, Brush.verticalGradient(
+                        0.0f to Color.White,
+                        0.15f to Color(0xFF00AA00),
+                        0.2f to Color(0xFF00AA00),
+                        0.8f to Color(0xFF00AA00),
+                        0.95f to Color.White,
+                        1.0f to Color.White,
+                        startY = (-size.minDimension / 2),
+                        endY = (size.minDimension / 2)
+                    ))
+
+                    if (location != null) {
+                        // already rotated the whole earth
+                        val projected = orthographicProject(0.0, location.latitude, size.minDimension / 2)
+                        drawCircle(Color.Red, radius = 10f, center = projected)
+                    }
+                }
+            }
+
+            rotate(-1 * (subsolarPoint?.latitude?.toFloat() ?: 0f), center) {
+                translate(center.x, center.y) {
+                    drawPath(shadowPath, Color.Black, style = stroke)
+                    drawPath(shadowPath, ShadowColor)
+                }
+            }
+
+            if (phase == 0.5f) {
+                drawCircle(ShadowColor)
+            }
+
         }
     }
+}
+
+@Composable
+fun EarthPage(coastlines: List<MultiPolygon>, modifier: Modifier = Modifier) {
+    val viewModel: EarthViewModel = hiltViewModel()
+
+    val currentLocation by viewModel.currentLocation.collectAsStateWithLifecycle()
+    
+    RequestLocationPermission(
+        onPermissionGranted = { viewModel.locationUpdated() },
+        onPermissionDenied = { viewModel.locationUpdated() },
+        onPermissionsRevoked = { viewModel.locationUpdated() }
+   )
+
+    Earth(coastlines, Modifier.padding(50.dp),
+        location = currentLocation,
+        subsolarPoint = viewModel.subsolarPoint)
 }
 
 @Preview(showBackground = true)
@@ -93,7 +184,7 @@ fun EarthPreview() {
                 onValueChange = { sliderPosition = it }
             )
             Text(text = sliderPosition.toString())
-            Earth(sliderPosition)
+            Earth(emptyList())
         }
     }
 }
