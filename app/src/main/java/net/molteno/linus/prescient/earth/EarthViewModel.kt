@@ -1,4 +1,4 @@
-package net.molteno.linus.prescient.earth;
+package net.molteno.linus.prescient.earth
 
 import android.Manifest
 import android.annotation.SuppressLint
