@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.sf.wkb)
     implementation(libs.accompanist.permissions)
     implementation(libs.kastro)
+    implementation(libs.openmeteo.api)
 
     implementation(libs.commons.net.commons.net)
     implementation(libs.timber)

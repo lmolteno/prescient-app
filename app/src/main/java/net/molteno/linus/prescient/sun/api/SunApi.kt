@@ -1,5 +1,6 @@
 package net.molteno.linus.prescient.sun.api
 
+import kotlinx.datetime.toKotlinInstant
 import net.molteno.linus.prescient.api.PrescientApi
 import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
@@ -42,7 +43,7 @@ class SunApi @Inject constructor (
                 val hp30 = entries[7].toDouble()
                 val ap30 = entries[8].toDouble()
                 if (hp30 > -0.5) { // -1 for invalid (unpopulated
-                    hp30s.add(HpEntry(time, hp30, ap30))
+                    hp30s.add(HpEntry(time.toInstant().toKotlinInstant(), hp30, ap30))
                 }
             }
         }

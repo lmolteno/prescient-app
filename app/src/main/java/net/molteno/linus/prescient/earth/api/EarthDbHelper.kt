@@ -2,6 +2,7 @@ package net.molteno.linus.prescient.earth.api
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import dagger.Module
 import dagger.Provides
@@ -14,6 +15,7 @@ import mil.nga.sf.MultiPolygon
 import mil.nga.sf.util.SFException
 import mil.nga.sf.wkb.GeometryReader
 import timber.log.Timber
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
@@ -30,9 +32,6 @@ class EarthDb(private val context: Context): SQLiteOpenHelper(context, DATABASE_
     init {
         try {
             val myPath = context.dataDir.path + DB_PATH + DATABASE_NAME
-//            File(myPath).delete()
-//            File(myPath + "-journal").delete()
-//            val files = File(context.dataDir.path + DB_PATH).listFiles()
             SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY)?.close()
             Timber.d("Found database in data dir")
         } catch (e: Exception) {
@@ -49,7 +48,26 @@ class EarthDb(private val context: Context): SQLiteOpenHelper(context, DATABASE_
     }
 
     fun getCoastlines(): List<MultiPolygon> {
-        val cursor = this.readableDatabase.query("simplified", null, null, null, null, null, null)
+        val cursor = try {
+            this.readableDatabase.query("simplified", null, null, null, null, null, null)
+        } catch (e: SQLiteException) {
+            Timber.d("failed to get table")
+
+            val c = this.readableDatabase.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null)
+
+            if (c.moveToFirst()) {
+                while (!c.isAfterLast) {
+                    Timber.d("found table ${c.getString(0)}")
+                    c.moveToNext()
+                }
+            }
+            c.close()
+
+            this.copyFromAssets()
+
+            return emptyList()
+        }
+
         val coastlines = mutableListOf<MultiPolygon>()
 
         with(cursor) {
@@ -82,15 +100,18 @@ class EarthDb(private val context: Context): SQLiteOpenHelper(context, DATABASE_
      */
     @Throws(IOException::class)
     private fun copyFromAssets() {
-        //Open your local db as the input stream
+        // reference to create file
+
+        this.writableDatabase
 
         val myInput: InputStream = context.assets.open(DATABASE_NAME)
 
-        // Path to the just created empty db
-        val outFileName: String = context.dataDir.path + DB_PATH + DATABASE_NAME
+        Timber.d("Opened assets db")
 
-        //Open the empty db as the output stream
-        val myOutput: OutputStream = FileOutputStream(outFileName)
+        val outFile = File(context.dataDir.path + DB_PATH + DATABASE_NAME)
+
+        // Open the empty db as the output stream
+        val myOutput: OutputStream = FileOutputStream(outFile)
 
         //transfer bytes from the input file to the output file
         val buffer = ByteArray(1024)
@@ -98,6 +119,8 @@ class EarthDb(private val context: Context): SQLiteOpenHelper(context, DATABASE_
         while ((myInput.read(buffer).also { length = it }) > 0) {
             myOutput.write(buffer, 0, length)
         }
+
+        Timber.d("Finished writing")
 
         //Close the streams
         myOutput.flush()

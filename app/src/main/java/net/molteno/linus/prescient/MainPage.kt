@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import mil.nga.sf.MultiPolygon
 import net.molteno.linus.prescient.api.PrescientApiModule
 import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.earth.EarthPage
@@ -45,14 +44,12 @@ fun MainPage() {
     val currentHp by viewModel.hp30.collectAsState()
     val solarEvents by viewModel.solarEvents.collectAsState()
     val solarRegions by viewModel.solarRegions.collectAsState()
-    val coastlines by viewModel.coastlines.collectAsState()
 
     Surface {
         MainPageView(
             solarRegions = solarRegions,
             solarEvents = solarEvents,
             currentHp = currentHp,
-            coastlines = coastlines,
             phase = 0.25f
         )
     }
@@ -69,7 +66,6 @@ fun MainPageView(
     solarRegions: Map<Int, List<SolarRegionObservation>>?,
     solarEvents: Map<Int, List<SolarEventObservation>>?,
     currentHp: List<HpEntry>?,
-    coastlines: List<MultiPolygon>,
     phase: Float
 ) {
     var selectedItem by remember { mutableStateOf(SystemObject.EARTH) }
@@ -84,7 +80,7 @@ fun MainPageView(
             when (obj) {
                 SystemObject.SUN -> SunPage(regions = solarRegions ?: emptyMap(), solarEvents = solarEvents, currentHp = currentHp)
                 SystemObject.MOON -> Moon(phase = phase)
-                SystemObject.EARTH -> EarthPage(coastlines = coastlines)
+                SystemObject.EARTH -> EarthPage()
             }
         }
     }
@@ -104,14 +100,6 @@ fun MainPageView(
         Column(Modifier.padding(paddingValues)) {
             getMainContent(item = selectedItem)
         }
-    }
-}
-
-@Composable
-fun HpDisplay(hp30: HpEntry?) {
-    if (hp30 == null) return
-    Column {
-        Text("rom ${hp30.time} to ${hp30.time.plusMinutes(30).toLocalTime()} = ${hp30.hp30}")
     }
 }
 
@@ -138,7 +126,7 @@ fun MainPagePreview() {
                 .height(800.dp)
                 .width(400.dp)
         ) {
-            MainPageView(regions, emptyMap(), null, emptyList(), 0.6f)
+            MainPageView(regions, emptyMap(), null, 0.6f)
         }
     }
 }

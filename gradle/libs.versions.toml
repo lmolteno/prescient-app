@@ -20,6 +20,7 @@ kotlinxDatetime = "0.6.1"
 lifecycleKtx = "2.8.4"
 retrofit = "2.11.0"
 kotlinxSerializationPlugin = "2.0.0"
+open-meteo = "0.7.1-beta.1"
 sfWkb = "2.2.3"
 timber = "5.0.1"
 ksp-plugin = "2.0.20-1.0.24"
@@ -58,6 +59,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinxSerialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+openmeteo-api = { module = "com.open-meteo:open-meteo-api-kotlin", version.ref = "open-meteo" }
 sf-wkb = { module = "mil.nga.sf:sf-wkb", version.ref = "sfWkb" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
