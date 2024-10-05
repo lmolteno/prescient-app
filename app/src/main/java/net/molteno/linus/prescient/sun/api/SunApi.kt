@@ -60,7 +60,7 @@ class SunApi @Inject constructor (
                 .groupBy { it.region }
         } catch (e: Exception) {
             Timber.e(e)
-            throw e
+            return emptyMap()
         }
     }
 
@@ -72,7 +72,7 @@ class SunApi @Inject constructor (
             return events.groupBy { it.eventId }
         } catch (e: Exception) {
             Timber.e(e)
-            throw e
+            return emptyMap()
         }
     }
 }

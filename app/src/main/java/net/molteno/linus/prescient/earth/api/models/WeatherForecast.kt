@@ -1,7 +1,7 @@
 package net.molteno.linus.prescient.earth.api.models
 
 import kotlinx.datetime.Instant
-import net.molteno.linus.prescient.common.TimeKeyed
+import net.molteno.linus.prescient.ui.shared.TimeKeyed
 
 data class WeatherForecast(
     var measurements: List<Measurement> = emptyList(),

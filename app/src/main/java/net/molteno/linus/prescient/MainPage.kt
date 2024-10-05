@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import net.molteno.linus.prescient.api.PrescientApiModule
 import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.earth.EarthPage
-import net.molteno.linus.prescient.moon.Moon
+import net.molteno.linus.prescient.moon.MoonPage
 import net.molteno.linus.prescient.sun.SunPage
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.sun.api.models.SolarEventObservation
@@ -49,8 +49,7 @@ fun MainPage() {
         MainPageView(
             solarRegions = solarRegions,
             solarEvents = solarEvents,
-            currentHp = currentHp,
-            phase = 0.25f
+            currentHp = currentHp
         )
     }
 }
@@ -65,8 +64,7 @@ enum class SystemObject(val icon: String) {
 fun MainPageView(
     solarRegions: Map<Int, List<SolarRegionObservation>>?,
     solarEvents: Map<Int, List<SolarEventObservation>>?,
-    currentHp: List<HpEntry>?,
-    phase: Float
+    currentHp: List<HpEntry>?
 ) {
     var selectedItem by remember { mutableStateOf(SystemObject.EARTH) }
 
@@ -79,7 +77,7 @@ fun MainPageView(
         ) { obj ->
             when (obj) {
                 SystemObject.SUN -> SunPage(regions = solarRegions ?: emptyMap(), solarEvents = solarEvents, currentHp = currentHp)
-                SystemObject.MOON -> Moon(phase = phase)
+                SystemObject.MOON -> MoonPage()
                 SystemObject.EARTH -> EarthPage()
             }
         }
@@ -126,7 +124,7 @@ fun MainPagePreview() {
                 .height(800.dp)
                 .width(400.dp)
         ) {
-            MainPageView(regions, emptyMap(), null, 0.6f)
+            MainPageView(regions, emptyMap(), null)
         }
     }
 }

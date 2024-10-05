@@ -29,11 +29,11 @@ import kotlin.math.sin
 
 
 @Composable
-fun Moon(phase: Float, modifier: Modifier = Modifier ) {
+fun Moon(phase: Float, modifier: Modifier = Modifier, drawEdges: Boolean = false) {
     val stroke = Stroke(2f, cap = StrokeCap.Round)
     val leftSide = phase < 0.5
     val halfPhase = if (leftSide) phase * 2f else 2 - (phase * 2f)
-    val shadowColor = Color.Black.copy(alpha = 1f - halfPhase / 2)
+    val shadowColor = Color.Black.copy(alpha = 1f - halfPhase / 4)
 
     Canvas(modifier
         .fillMaxSize()
@@ -44,17 +44,17 @@ fun Moon(phase: Float, modifier: Modifier = Modifier ) {
             return@Canvas
         }
         if (phase == 0.0f || phase == 1.0f) {
-            drawCircle(Color.Black, style= stroke)
-            drawCircle(Color.White)
+            drawCircle(Color.Black, style = stroke)
+            drawCircle(Color.LightGray)
             return@Canvas
         }
-        drawCircle(Color.White)
+        drawCircle(Color.LightGray)
         translate(center.x, center.y) {
             val moonPath = Path()
             moonPath.moveTo(0f, size.minDimension / 2.0F)
             for (i in 1..179) {
                 val angle = Math.toRadians(i.toDouble()).toFloat()
-                val x = ((halfPhase - 0.5F) * sin(angle) * size.minDimension * if (leftSide) 1f else -1f)
+                val x = 0.5f * (sin(angle) * size.minDimension * if (leftSide) -1f else 1f)
                 val y = cos(angle) * size.minDimension * 0.5F
                 moonPath.lineTo(x, y)
             }
@@ -69,25 +69,27 @@ fun Moon(phase: Float, modifier: Modifier = Modifier ) {
             drawPath(moonPath, Color.Black, style = stroke)
             drawPath(moonPath, shadowColor)
 
-            drawArc(
-                if (leftSide) Color.White else Color.Black,
-                -60f - 180f,
-                120f,
-                false,
-                topLeft = Offset(-size.minDimension / 2f, -size.minDimension / 2f),
-                size = Size(size.minDimension, size.minDimension),
-                style = stroke
-            )
+            if (drawEdges) {
+                drawArc(
+                    if (leftSide) Color.White else Color.Black,
+                    -60f - 180f,
+                    120f,
+                    false,
+                    topLeft = Offset(-size.minDimension / 2f, -size.minDimension / 2f),
+                    size = Size(size.minDimension, size.minDimension),
+                    style = stroke
+                )
 
-            drawArc(
-                if (leftSide) Color.Black else Color.White,
-                -60f,
-                120f,
-                false,
-                topLeft = Offset(-size.minDimension / 2f, -size.minDimension / 2f),
-                size = Size(size.minDimension, size.minDimension),
-                style = stroke
-            )
+                drawArc(
+                    if (leftSide) Color.Black else Color.White,
+                    -60f,
+                    120f,
+                    false,
+                    topLeft = Offset(-size.minDimension / 2f, -size.minDimension / 2f),
+                    size = Size(size.minDimension, size.minDimension),
+                    style = stroke
+                )
+            }
         }
     }
 }

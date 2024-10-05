@@ -34,6 +34,7 @@ class EarthViewModel @Inject constructor (@ApplicationContext private val contex
     val forecast = MutableStateFlow<WeatherForecast?>(null)
     val coastlines = MutableStateFlow<List<MultiPolygon>?>(null)
     val subsolarPoint = MutableStateFlow(subsolarPoint(Clock.System.now()))
+    val currentTime = MutableStateFlow(Clock.System.now())
 
     private fun areLocationPermissionsGranted(): Boolean =
         ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -64,6 +65,7 @@ class EarthViewModel @Inject constructor (@ApplicationContext private val contex
     }
 
     fun changeTime(time: Instant) {
+        currentTime.value = time
         subsolarPoint.value = subsolarPoint(time)
     }
 

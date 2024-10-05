@@ -5,7 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.datetime.Instant
-import net.molteno.linus.prescient.common.TimeKeyed
+import net.molteno.linus.prescient.ui.shared.TimeKeyed
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import net.molteno.linus.prescient.common.Chart
+import net.molteno.linus.prescient.ui.shared.Chart
 import net.molteno.linus.prescient.sun.api.HpEntry
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import net.molteno.linus.prescient.utils.lerp
