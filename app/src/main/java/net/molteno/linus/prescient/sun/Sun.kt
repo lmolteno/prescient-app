@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -19,11 +20,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import net.molteno.linus.prescient.api.PrescientApiModule
 import net.molteno.linus.prescient.api.models.SolarRegionObservation
 import net.molteno.linus.prescient.ui.theme.PrescientTheme
 import net.molteno.linus.prescient.utils.drawOrthoCircle
 import net.molteno.linus.prescient.utils.orthographicProject
 import timber.log.Timber
+import java.time.Instant
 import java.time.LocalDate
 import kotlin.math.sqrt
 
@@ -82,10 +85,16 @@ fun Sun(
 @Preview
 @Composable
 fun SunPreview() {
-    val regions by remember { mutableStateOf<List<SolarRegionObservation>>(emptyList()) }
+    val prescientApi = remember { PrescientApiModule.providesPrescientApi() }
+    var solarRegions by remember { mutableStateOf<List<SolarRegionObservation>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         launch(Dispatchers.IO) {
+            val regions = prescientApi.fetchRegions(Instant.now().minusSeconds(86400), Instant.now())
+            val mostRecentObservations = regions.maxOf { it.observedDate }
+
+            solarRegions = regions
+                .filter { it.observedDate == mostRecentObservations }
 //            regions = noaaApi.fetchSolarRegions()
 //                .mapNotNull { it.toSolarRegionObservation() }
 //                .filter { it.observedDate == LocalDate.now().minusDays(1) }
@@ -93,7 +102,7 @@ fun SunPreview() {
     }
 
     PrescientTheme {
-        Text(text = "${regions.count()} regions ${LocalDate.now().minusDays(1)}")
-        Sun(regions = regions)
+        Text(text = "${solarRegions.count()} regions ${LocalDate.now().minusDays(1)}")
+        Sun(regions = solarRegions)
     }
 }
